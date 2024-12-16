@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  apache:
+    build:
+      context: ./apache
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    volumes:
+      - ../tasty-note-backend:/var/www/html
+    depends_on:
+      - php
+    networks:
+      - tasty-note-network
+
+  php:
+    build:
+      context: ./php
+      dockerfile: Dockerfile
+    volumes:
+      - ../tasty-note-backend:/var/www/html
+    depends_on:
+      - mysql
+    networks:
+      - tasty-note-network
+
+  mysql:
+    build:
+      context: ./mysql
+      dockerfile: Dockerfile
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: tasty_note
+      MYSQL_USER: tasty_note
+      MYSQL_PASSWORD: password
+      TZ: Asia/Tokyo
+    networks:
+      - tasty-note-network
+
+  node:
+    build:
+      context: ./node
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ../tasty-note-frontend:/app
+    environment:
+      - NODE_ENV=development
+    networks:
+      - tasty-note-network
+
+networks:
+  tasty-note-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
+    driver: local
