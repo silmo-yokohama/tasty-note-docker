@@ -9,7 +9,10 @@ RUN apt-get update && apt-get install -y \
   libxml2-dev \
   zip \
   unzip \
-  && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
+  libssl-dev \
+  ca-certificates \
+  && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd \
+  && update-ca-certificates
 
 # Composerのインストール
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
